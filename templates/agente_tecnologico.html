@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Sofía Assistant</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:#edf2f7;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* =========================
+   POPUP CONTAINER
+========================= */
+
+.chat-popup{
+    width:520px;
+    height:860px;
+    background:linear-gradient(180deg,#ffffff 0%, #f4f7fb 100%);
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:
+        0 20px 60px rgba(15,23,42,.12),
+        0 4px 10px rgba(15,23,42,.05);
+
+    border:1px solid #e8eef7;
+
+    display:flex;
+    flex-direction:column;
+
+    position:relative;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+    padding:24px 24px 18px;
+    position:relative;
+}
+
+.window-btn{
+    width:36px;
+    height:36px;
+    border-radius:12px;
+    background:white;
+    border:1px solid #edf2f7;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#64748b;
+    font-size:20px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.window-btn:hover{
+    background:#f8fafc;
+}
+
+.assistant-info{
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+
+.avatar{
+    width:82px;
+    height:82px;
+    flex-shrink:0;
+}
+
+.avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.assistant-meta h1{
+    font-size:28px;
+    color:#0f172a;
+    font-weight:700;
+    margin-bottom:4px;
+}
+
+.assistant-meta p{
+    color:#64748b;
+    font-size:16px;
+    margin-bottom:8px;
+}
+
+.status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#475569;
+    font-size:14px;
+}
+
+.status-dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#22c55e;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+    padding:0 24px 22px;
+}
+
+.hero-card{
+    background:linear-gradient(180deg,#f4f8ff 0%, #f8fbff 100%);
+    border-radius:20px;
+    padding:20px;
+    position:relative;
+    overflow:hidden;
+}
+
+.hero-card::before{
+    content:'';
+    position:absolute;
+    width:350px;
+    height:240px;
+    background:#dbeafe;
+    border-radius:50%;
+    right:-100px;
+    top:-80px;
+    opacity:.5;
+}
+
+.hero h2{
+    font-size:20px;
+    line-height:1.1;
+    color:#0f172a;
+    margin-bottom:12px;
+    position:relative;
+    z-index:2;
+}
+
+.hero p{
+    font-size:15px;
+    color:#475569;
+    line-height:1.6;
+    position:relative;
+    z-index:2;
+}
+
+/* =========================
+   CHAT
+========================= */
+
+.chat-area{
+    flex:1;
+    overflow-y:auto;
+    padding:0 24px 20px;
+}
+
+.chat-area::-webkit-scrollbar{
+    width:5px;
+}
+
+.chat-area::-webkit-scrollbar-thumb{
+    background:#dbe3ef;
+    border-radius:20px;
+}
+
+.message-row{
+    display:flex;
+    margin-bottom:15px;
+}
+
+.message-row.user{
+    justify-content:flex-end;
+}
+
+.bot-avatar{
+    width:38px;
+    height:38px;
+    overflow:hidden;
+    margin-right:10px;
+    flex-shrink:0;
+}
+
+.bot-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.message{
+    max-width:100%;
+    padding:18px;
+    border-radius:22px;
+    font-size:15px;
+    line-height:1.7;
+    position:relative;
+}
+
+.bot-message{
+    background:white;
+    color:#1e293b;
+    border:1px solid #edf2f7;
+    border-top-left-radius:8px;
+    box-shadow:0 5px 20px rgba(15,23,42,.05);
+}
+
+.user-message{
+    background:linear-gradient(135deg,#3b82f6 0%, #4f46e5 100%);
+    color:white;
+    border-bottom-right-radius:8px;
+    box-shadow:0 10px 25px rgba(79,70,229,.25);
+}
+
+.message-time{
+    font-size:12px;
+    color:#94a3b8;
+    margin-top:8px;
+}
+
+.bot-content{
+    color:#334155;
+    font-size:15px;
+    line-height:1.8;
+}
+
+/* TITULOS */
+
+.bot-content h1,
+.bot-content h2,
+.bot-content h3{
+    color:#0f172a;
+    margin-top:18px;
+    margin-bottom:10px;
+    font-weight:700;
+}
+
+.bot-content h3{
+    font-size:17px;
+}
+
+/* PARRAFOS */
+
+.bot-content p{
+    margin-bottom:14px;
+}
+
+/* LISTAS */
+
+.bot-content ul,
+.bot-content ol{
+    margin-left:22px;
+    margin-bottom:16px;
+}
+
+.bot-content li{
+    margin-bottom:8px;
+}
+
+/* NEGRITAS */
+
+.bot-content strong{
+    color:#0f172a;
+    font-weight:700;
+}
+
+/* LINKS */
+
+.bot-content a{
+    color:#2563eb;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.bot-content a:hover{
+    text-decoration:underline;
+}
+
+/* BLOQUES */
+
+.bot-content blockquote{
+    border-left:4px solid #93c5fd;
+    padding-left:14px;
+    margin:14px 0;
+    color:#475569;
+}
+
+/* CODIGO */
+
+.bot-content code{
+    background:#eff6ff;
+    padding:2px 6px;
+    border-radius:6px;
+    font-size:14px;
+}
+
+/* =========================
+   SUGGESTIONS
+========================= */
+
+.suggestions{
+    padding:0 24px 16px;
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+}
+
+.suggestions::-webkit-scrollbar{
+    display:none;
+}
+
+.suggestion-chip{
+    background:#f1f5ff;
+    color:#2563eb;
+    border:1px solid #dbeafe;
+    padding:12px 16px;
+    border-radius:16px;
+    font-size:14px;
+    white-space:nowrap;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.suggestion-chip:hover{
+    background:#2563eb;
+    color:white;
+}
+
+/* =========================
+   ESCUCHAR
+========================= */
+.speak-btn{
+    width:38px;
+    height:38px;
+
+    border:none;
+    border-radius:50%;
+
+    background:linear-gradient(
+        135deg,
+        #e0f2fe 0%,
+        #dbeafe 100%
+    );
+
+    color:#2563eb;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+
+    margin-top:12px;
+
+    transition:all .25s ease;
+
+    font-size:15px;
+
+    box-shadow:
+        0 4px 10px rgba(59,130,246,.10);
+
+}
+
+.speak-btn:hover{
+
+    transform:translateY(-2px) scale(1.05);
+
+    background:linear-gradient(
+        135deg,
+        #bfdbfe 0%,
+        #93c5fd 100%
+    );
+
+    box-shadow:
+        0 8px 18px rgba(59,130,246,.18);
+
+}
+
+.speak-btn:active{
+
+    transform:scale(.96);
+
+}
+
+.speak-btn.playing{
+
+    background:linear-gradient(
+        135deg,
+        #3b82f6 0%,
+        #4f46e5 100%
+    );
+
+    color:white;
+
+}
+
+/* =========================
+   INPUT
+========================= */
+
+.input-wrapper{
+    padding:18px 24px 24px;
+    background:rgba(255,255,255,.9);
+    backdrop-filter:blur(10px);
+    border-top:1px solid #edf2f7;
+}
+
+.input-container{
+    background:white;
+    border:1px solid #e2e8f0;
+    border-radius:22px;
+    padding:10px;
+    display:flex;
+    align-items:flex-end;
+    gap:10px;
+    box-shadow:0 8px 30px rgba(15,23,42,.05);
+}
+
+.icon-btn{
+    width:48px;
+    height:48px;
+    border:none;
+    border-radius:16px;
+    background:#f8fafc;
+    cursor:pointer;
+    font-size:20px;
+    color:#64748b;
+    transition:.2s;
+}
+
+.icon-btn:hover{
+    background:#eef2ff;
+    color:#4f46e5;
+}
+
+#message-input{
+    flex:1;
+    border:none;
+    outline:none;
+    resize:none;
+    padding:14px 6px;
+    font-size:15px;
+    font-family:inherit;
+    color:#1e293b;
+    max-height:140px;
+}
+
+.send-btn{
+    width:54px;
+    height:54px;
+    border:none;
+    border-radius:18px;
+    background:linear-gradient(135deg,#3b82f6 0%, #4f46e5 100%);
+    color:white;
+    cursor:pointer;
+    font-size:22px;
+    transition:.25s;
+    flex-shrink:0;
+}
+
+.send-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 25px rgba(79,70,229,.35);
+}
+
+.footer-note{
+    text-align:center;
+    font-size:12px;
+    color:#94a3b8;
+    margin-top:12px;
+}
+
+@media(max-width:600px){
+
+    body{
+        padding:0;
+    }
+
+    .chat-popup{
+        width:100%;
+        height:100vh;
+        border-radius:0;
+    }
+
+    .hero h2{
+        font-size:34px;
+    }
+
+    .quick-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="chat-popup">
+
+    <!-- HEADER -->
+    <div class="header">
+
+        <div class="assistant-info">
+
+            <div class="avatar">
+                <img src="/static/img/Recurso_Sofia.png" alt="Sofía" title="Sofía" width="82" height="82">
+            </div>
+
+            <div class="assistant-meta">
+                <h1>Sofía</h1>
+                <p>Asistente virtual</p>
+
+                <div class="status">
+                    <div class="status-dot"></div>
+                    En línea
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-card">
+            <h2>¡Bienvenido!👋</h2>
+            <p>
+                Estoy aquí para ayudarte a navegar en la plataforma SIFODS.
+            </p>
+        </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="chat-area" id="chatbox"></div>
+
+
+    <!-- SUGGESTIONS -->
+    <div class="suggestions">
+
+        <div class="suggestion-chip">
+            ¿Cómo descargo mi constancia?
+        </div>
+
+        <div class="suggestion-chip">
+            ¿Cómo cambio mi contraseña?
+        </div>
+
+    </div>
+
+    <!-- INPUT -->
+    <div class="input-wrapper">
+
+        <div class="input-container">
+
+            <button class="icon-btn" id="voice-btn">
+                🎤
+            </button>
+
+            <textarea
+                id="message-input"
+                rows="1"
+                placeholder="Escribe tu pregunta..."
+            ></textarea>
+
+            <button class="send-btn" id="send-btn">
+                ➤
+            </button>
+
+        </div>
+
+        <div class="footer-note">
+            Sofía puede cometer errores. Verifica la información importante.
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+// ==========================================
+// 🌐 CONFIGURACIÓN GENERAL
+// ==========================================
+
+// Obtener parámetros URL
+const urlParams = new URLSearchParams(window.location.search);
+
+const usuario =
+    urlParams.get('usuario') ||
+    'usuario_' + Date.now();
+
+const nombreUsuario =
+    urlParams.get('nombre') || null;
+
+// URL base del backend
+const API_BASE = window.location.origin;
+
+// Elementos
+const chatbox = document.getElementById('chatbox');
+const input = document.getElementById('message-input');
+const sendBtn = document.getElementById('send-btn');
+const voiceBtn = document.getElementById('voice-btn');
+
+// ==========================================
+// 🎤 RECONOCIMIENTO DE VOZ
+// ==========================================
+
+let recognition = null;
+let isRecording = false;
+
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    recognition = new SpeechRecognition();
+
+    recognition.lang = 'es-PE';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+
+        isRecording = true;
+
+        voiceBtn.innerHTML = '🔴';
+
+        voiceBtn.style.background =
+            '#fee2e2';
+
+    };
+
+    recognition.onend = () => {
+
+        isRecording = false;
+
+        voiceBtn.innerHTML = '🎤';
+
+        voiceBtn.style.background =
+            '#f8fafc';
+
+    };
+
+    recognition.onerror = (event) => {
+
+        console.error(event.error);
+
+        addBotMessage(
+            'No se pudo reconocer el audio.'
+        );
+
+    };
+
+    recognition.onresult = (event) => {
+
+        const transcript =
+            event.results[0][0].transcript;
+
+        input.value = transcript;
+
+        autoResizeTextarea();
+
+    };
+
+}
+
+// ==========================================
+// 🔊 TEXT TO SPEECH
+// ==========================================
+
+let currentUtterance = null;
+
+function speakText(text, button) {
+
+    if (!('speechSynthesis' in window)) {
+        return;
+    }
+
+    if (currentUtterance) {
+
+        window.speechSynthesis.cancel();
+
+        currentUtterance = null;
+
+        button.innerHTML = '🔊';
+        button.classList.remove('playing');
+
+        return;
+    }
+
+    const cleanText =
+        text.replace(/🤖/g, '').trim();
+
+    currentUtterance =
+        new SpeechSynthesisUtterance(cleanText);
+
+    currentUtterance.lang = 'es-ES';
+
+    currentUtterance.rate = 1;
+
+    button.innerHTML = '⏸';
+    button.classList.add('playing');
+
+    currentUtterance.onend = () => {
+
+        currentUtterance = null;
+
+        button.innerHTML = '🔊';
+        button.classList.remove('playing');
+
+    };
+
+    window.speechSynthesis.speak(currentUtterance);
+
+}
+
+// ==========================================
+// 💬 MENSAJES
+// ==========================================
+
+function scrollToBottom() {
+
+    chatbox.scrollTop =
+        chatbox.scrollHeight;
+
+}
+
+// ----------------------------
+// Mensaje usuario
+// ----------------------------
+
+function addUserMessage(message) {
+
+    const row =
+        document.createElement('div');
+
+    row.className =
+        'message-row user';
+
+    row.innerHTML = `
+        <div>
+            <div class="message user-message">
+                ${message}
+            </div>
+
+            <div class="message-time" style="text-align:right;">
+                ${getCurrentTime()}
+            </div>
+        </div>
+    `;
+
+    chatbox.appendChild(row);
+
+    scrollToBottom();
+
+}
+
+// ----------------------------
+// Mensaje bot
+// ----------------------------
+
+function addBotMessage(message) {
+
+    const row =
+        document.createElement('div');
+
+    row.className =
+        'message-row';
+
+    row.innerHTML = `
+        <div class="bot-avatar">
+            <img src="/static/img/Recurso_Sofia.png">
+        </div>
+
+        <div>
+
+            <div class="message bot-message">
+
+                <div class="bot-content">
+                    ${marked.parse(message)}
+                </div>
+
+                <button class="speak-btn" title="Escuchar respuesta">
+                    🔊
+                </button>
+
+            </div>
+
+            <div class="message-time">
+                ${getCurrentTime()}
+            </div>
+
+        </div>
+    `;
+
+    const speakBtn =
+        row.querySelector('.speak-btn');
+
+    speakBtn.addEventListener('click', () => {
+
+        speakText(message, speakBtn);
+
+    });
+
+    chatbox.appendChild(row);
+
+    scrollToBottom();
+
+}
+
+// ==========================================
+// ⌛ TYPING INDICATOR
+// ==========================================
+
+function addTypingIndicator() {
+
+    const typing =
+        document.createElement('div');
+
+    typing.id = 'typing-indicator';
+
+    typing.className = 'message-row';
+
+    typing.innerHTML = `
+        <div class="bot-avatar">
+            <img src="/static/img/Recurso_Sofia.png">
+        </div>
+
+        <div class="message bot-message">
+            ✨ Sofía está escribiendo...
+        </div>
+    `;
+
+    chatbox.appendChild(typing);
+
+    scrollToBottom();
+
+}
+
+function removeTypingIndicator() {
+
+    const typing =
+        document.getElementById('typing-indicator');
+
+    if (typing) {
+        typing.remove();
+    }
+
+}
+
+// ==========================================
+// 📡 CONSULTA AL ENDPOINT
+// ==========================================
+
+async function sendMessage(message) {
+
+    if (!message.trim()) {
+        return;
+    }
+
+    addUserMessage(message);
+
+    input.value = '';
+
+    autoResizeTextarea();
+
+    addTypingIndicator();
+
+    disableUI(true);
+
+    try {
+
+        // ==================================
+        // 🔥 FETCH API
+        // ==================================
+
+        const response = await fetch(
+            `${API_BASE}/api/sifods`,
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+
+                body: JSON.stringify({
+
+                    mensaje: message,
+
+                    usuario: usuario,
+
+                    nombre_usuario: nombreUsuario
+
+                })
+            }
+        );
+
+        removeTypingIndicator();
+
+        // Error backend
+        if (!response.ok) {
+
+            const errorData =
+                await response.json()
+                .catch(() => ({}));
+
+            throw new Error(
+                errorData.detail ||
+                `Error ${response.status}`
+            );
+
+        }
+
+        // Respuesta JSON
+        const data =
+            await response.json();
+
+        // Mostrar respuesta
+        addBotMessage(
+            data.respuesta ||
+            'No se recibió respuesta.'
+        );
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        removeTypingIndicator();
+
+        addBotMessage(
+            `❌ ${error.message}`
+        );
+
+    }
+
+    finally{
+
+        disableUI(false);
+
+    }
+
+}
+
+// ==========================================
+// 🔒 DESACTIVAR UI
+// ==========================================
+
+function disableUI(disabled){
+
+    sendBtn.disabled = disabled;
+
+    input.disabled = disabled;
+
+    voiceBtn.disabled = disabled;
+
+}
+
+// ==========================================
+// ⏰ HORA
+// ==========================================
+
+function getCurrentTime(){
+
+    return new Date().toLocaleTimeString(
+        'es-PE',
+        {
+            hour:'2-digit',
+            minute:'2-digit'
+        }
+    );
+
+}
+
+// ==========================================
+// 📏 AUTO RESIZE
+// ==========================================
+
+function autoResizeTextarea(){
+
+    input.style.height = 'auto';
+
+    input.style.height =
+        input.scrollHeight + 'px';
+
+}
+
+// ==========================================
+// 🚀 EVENTOS
+// ==========================================
+
+// Enviar botón
+sendBtn.addEventListener('click', () => {
+
+    const message =
+        input.value.trim();
+
+    if(message){
+
+        sendMessage(message);
+
+    }
+
+});
+
+// Enter
+input.addEventListener('keypress', (e) => {
+
+    if(e.key === 'Enter' && !e.shiftKey){
+
+        e.preventDefault();
+
+        const message =
+            input.value.trim();
+
+        if(message){
+
+            sendMessage(message);
+
+        }
+
+    }
+
+});
+
+// Auto resize
+input.addEventListener('input', autoResizeTextarea);
+
+// Chips sugeridos
+document.querySelectorAll('.suggestion-chip')
+.forEach(chip => {
+
+    chip.addEventListener('click', () => {
+
+        sendMessage(chip.innerText);
+
+    });
+
+});
+
+// Micrófono
+voiceBtn.addEventListener('click', () => {
+
+    if(!recognition){
+        return;
+    }
+
+    if(isRecording){
+
+        recognition.stop();
+
+    }else{
+
+        recognition.start();
+
+    }
+
+});
+
+// ==========================================
+// 🟢 INIT
+// ==========================================
+
+window.addEventListener('DOMContentLoaded', async () => {
+
+    try{
+
+        // Verifica health endpoint
+        const response =
+            await fetch(`${API_BASE}/health`);
+
+        if(response.ok){
+
+            addBotMessage(
+                '¡Hola! Soy Sofía. ¿En qué puedo ayudarte hoy?'
+            );
+
+        }else{
+
+            throw new Error(
+                'Servidor no disponible'
+            );
+
+        }
+
+    }
+
+    catch(error){
+
+        addBotMessage(
+            '⚠️ No se pudo conectar con el servidor.'
+        );
+
+    }
+
+});
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</body>
+</html>
