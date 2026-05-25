@@ -9,20 +9,14 @@ agente_tecnologico/
 ├── .env.example                  ← Plantilla de .env (sí commitear)
 │
 ├── app.py                        ← FastAPI: endpoints, orquestación
-├── sistema_recomendacion.py      ← Motor de recomendación híbrido
 │
 ├── config/
 │   ├── __init__.py               ← Exporta `settings`
-│   ├── settings.py               ← ⭐ ÚNICA fuente de verdad para parámetros
+│   ├── settings.py               
 │   └── prompts.py                ← Todos los prompts del sistema
 │
 ├── templates/
 │   └── agente_tecnologico.html   ← Frontend HTML
-│
-├── data/                         ← (opcional) Excel de fallback
-│   └── inscripciones.xlsx
-│
-└── schema_recomendacion.sql      ← Schema de PostgreSQL
 ```
 
 ---
@@ -41,20 +35,6 @@ agente_tecnologico/
 
 ---
 
-## Parámetros Clave en .env
-
-| Variable              | Default  | Descripción                               |
-|-----------------------|----------|-------------------------------------------|
-| `REC_TOP_K`           | `3`      | Cursos a devolver por recomendación       |
-| `REC_MIN_SCORE`       | `0.05`   | Score mínimo para incluir un curso        |
-| `REC_PESO_COLABORATIVO` | `0.40` | Peso del filtro colaborativo (suma = 1.0) |
-| `REC_PESO_POPULARIDAD`  | `0.30` | Peso de popularidad                       |
-| `REC_PESO_HISTORIAL`    | `0.20` | Peso del historial                        |
-| `REC_PESO_NOVEDAD`      | `0.10` | Peso de novedad                           |
-| `SIFODS_MAX_TOKENS`   | `1500`   | Max tokens en respuestas SIFODS           |
-| `JUSTIF_MAX_TOKENS`   | `120`    | Max tokens en justificaciones LLM         |
-| `LLM_PRINCIPAL`       | `gpt-4o-mini` | Modelo OpenAI                        |
-| `LLM_FALLBACK`        | `gemini-2.5-flash` | Modelo fallback Gemini          |
 
 ---
 
