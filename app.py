@@ -22,7 +22,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from openai import OpenAI
+from openai import AzureOpenAI
 from google import genai
 from qdrant_client import QdrantClient
 from sentence_transformers import SentenceTransformer
@@ -38,14 +38,9 @@ from src.prompts import (
 )
 from src.navegacion_router import NavegacionRouter
 
-ssl._create_default_https_context = ssl.create_default_context(cafile=certifi.where())
-warnings.filterwarnings("ignore", message="pandas only supports SQLAlchemy connectable")
-
-os.environ["PYTHONHTTPSVERIFY"] = "0"
-os.environ["CURL_CA_BUNDLE"] = ""
-os.environ["REQUESTS_CA_BUNDLE"] = ""
-os.environ["SSL_CERT_FILE"] = ""
-os.environ["HF_HUB_DISABLE_SSL_VERIFY"] = "1"
+ssl._create_default_https_context = ssl.create_default_context(
+    cafile=certifi.where()
+)
 
 logging.basicConfig(level=settings.servidor.log_level)
 logger = logging.getLogger(__name__)
@@ -77,8 +72,14 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # CLIENTES EXTERNOS
 # ══════════════════════════════════════════════════════════════════════
 
-openai_client: Optional[OpenAI] = (
-    OpenAI(api_key=settings.llm.openai_api_key) if settings.llm.tiene_openai else None
+openai_client = (
+    AzureOpenAI(
+        api_key=settings.llm.AZURE_API_KEY,
+        api_version=settings.llm.AZURE_API_VERSION,
+        azure_endpoint=settings.llm.AZURE_ENDPOINT,
+    )
+    if settings.llm.tiene_openai
+    else None
 )
 
 gemini_model = None
@@ -93,7 +94,19 @@ qdrant_client = QdrantClient(
     api_key = settings.qdrant.api_key or None,
 )
 
-embedding_model = SentenceTransformer(settings.llm.embedding_model)
+embedding_model = None
+
+def get_embedding_model():
+    global embedding_model
+
+    if embedding_model is None:
+        embedding_model = SentenceTransformer(
+            settings.llm.embedding_model
+        )
+
+    return embedding_model
+
+
 tokenizer       = tiktoken.encoding_for_model("gpt-4o-mini")
 
 nav_router: Optional[NavegacionRouter] = None
@@ -204,7 +217,7 @@ async def llamar_llm_con_fallback(messages: List[Dict], model_params: dict) -> s
         try:
             def _openai():
                 return openai_client.chat.completions.create(
-                    model       = settings.llm.modelo_principal,
+                    model       = settings.llm.AZURE_DEPLOYMENT,
                     messages = messages,
                     max_tokens  = model_params["max_tokens"],
                     temperature = model_params["temperature"],
@@ -251,7 +264,7 @@ async def llamar_llm_con_fallback(messages: List[Dict], model_params: dict) -> s
 
 def search_qdrant(query: str) -> List[Dict]:
     try:
-        emb    = embedding_model.encode(query).tolist()
+        emb = get_embedding_model().encode(query).tolist()
         result = qdrant_client.query_points(
             collection_name = settings.qdrant.coleccion,
             query           = emb,
@@ -315,7 +328,7 @@ Responde SOLO la pregunta reescrita.
         if openai_client:
 
             response = openai_client.chat.completions.create(
-                model=settings.llm.modelo_principal,
+                model=settings.llm.AZURE_DEPLOYMENT,
                 messages=[{
                     "role": "user",
                     "content": prompt
