@@ -65,7 +65,11 @@ class AgenteConfig:
 
 @dataclass
 class LLMConfig:
-    openai_api_key:   str = field(default_factory=lambda: _env_str("OPENAI_API_KEY"))
+    #openai_api_key:   str = field(default_factory=lambda: _env_str("OPENAI_API_KEY"))
+    AZURE_API_KEY:    str = field(default_factory=lambda: _env_str("AZURE_OPENAI_KEY"))
+    AZURE_ENDPOINT:   str = field(default_factory=lambda: _env_str("AZURE_OPENAI_ENDPOINT"))
+    AZURE_DEPLOYMENT: str = field(default_factory=lambda: _env_str("AZURE_OPENAI_DEPLOYMENT"))
+    AZURE_API_VERSION: str = field(default_factory=lambda: _env_str("AZURE_OPENAI_VERSION", "2024-05-01-preview"))
     gemini_api_key:   str = field(default_factory=lambda: _env_str("GEMINI_API_KEY"))
     modelo_principal: str = field(default_factory=lambda: _env_str("LLM_PRINCIPAL", "gpt-4o-mini"))
     modelo_fallback:  str = field(default_factory=lambda: _env_str("LLM_FALLBACK",  "gemini-2.5-flash"))
@@ -76,7 +80,7 @@ class LLMConfig:
 
     @property
     def tiene_openai(self) -> bool:
-        return bool(self.openai_api_key)
+        return bool(self.AZURE_API_KEY)
 
     @property
     def tiene_gemini(self) -> bool:
@@ -188,7 +192,7 @@ class Settings:
     def _validar(self) -> None:
         """Advertencias al arrancar si faltan claves críticas."""
         if not self.llm.tiene_openai:
-            logger.warning("⚠️  OPENAI_API_KEY no definida → se usará solo Gemini como LLM")
+            logger.warning("⚠️  AZURE_API_KEY no definida → se usará solo Gemini como LLM")
         if not self.llm.tiene_gemini:
             logger.warning("⚠️  GEMINI_API_KEY no definida → sin fallback LLM")
         if not self.llm.tiene_openai and not self.llm.tiene_gemini:
@@ -201,7 +205,7 @@ class Settings:
             "version":          self.agente.version,
             "llm_principal":    self.llm.modelo_principal,
             "llm_fallback":     self.llm.modelo_fallback,
-            "openai":           self.llm.tiene_openai,
+            "azure":            self.llm.tiene_openai,
             "gemini":           self.llm.tiene_gemini,
             "qdrant_url":       self.qdrant.url,
             "qdrant_coleccion": self.qdrant.coleccion,
