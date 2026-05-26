@@ -713,12 +713,17 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 
 let currentUtterance = null;
 
+window.speechSynthesis.onvoiceschanged = () => {
+    window.speechSynthesis.getVoices();
+};
+
 function speakText(text, button) {
 
     if (!('speechSynthesis' in window)) {
         return;
     }
 
+    // detener audio actual
     if (currentUtterance) {
 
         window.speechSynthesis.cancel();
@@ -736,10 +741,21 @@ function speakText(text, button) {
 
     currentUtterance =
         new SpeechSynthesisUtterance(cleanText);
+    currentUtterance.lang = 'es-MX';
+    currentUtterance.rate = 0.95;
+    currentUtterance.pitch = 1.15;
+    currentUtterance.volume = 1;
 
-    currentUtterance.lang = 'es-ES';
+    const voices =
+        window.speechSynthesis.getVoices();
 
-    currentUtterance.rate = 1;
+    const sabinaVoice =
+        voices.find(v =>
+            v.name.includes('Sabina')
+        );
+
+    currentUtterance.voice =
+        sabinaVoice;
 
     button.innerHTML = '⏸';
     button.classList.add('playing');
